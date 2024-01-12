@@ -15,6 +15,13 @@ WHITE = (255, 255, 255)
 
 
 tilemap = [
+
+
+
+
+
+
+
 'BBBBBBBBBBBBBBBBBBBB',
 'B...BBBBBBBB.......B',
 'B...BBBBBBBB.......B',
