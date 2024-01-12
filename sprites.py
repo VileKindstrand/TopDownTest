@@ -66,7 +66,7 @@ class Player(pygame.sprite.Sprite):
                 if self.x_change > 0:
                     self.rect.x = hits[0].rect.left - self.rect.width       #vid kollision mellan block och player kommer spelaren först teleporteras in i blocket och sedan flyttas en tiles längd tillbaka där spelaren kom ifrån, vilket kommer leda till att spelaren hamnar vid blockets vägg
                 if self.x_change < 0:
-                    self.rect.x = hits[0].rect.right + self.rect.width
+                    self.rect.x = hits[0].rect.right
                 
         if direction == "y":
             hits = pygame.sprite.spritecollide(self, self.game.blocks, False)
@@ -74,7 +74,7 @@ class Player(pygame.sprite.Sprite):
                 if self.y_change > 0:
                     self.rect.y = hits[0].rect.top - self.rect.height       #vid kollision mellan block och player kommer spelaren först teleporteras in i blocket och sedan flyttas en tiles längd tillbaka där spelaren kom ifrån, vilket kommer leda till att spelaren hamnar vid blockets vägg
                 if self.y_change < 0:
-                    self.rect.y = hits[0].rect.bottom  + self.rect.height
+                    self.rect.y = hits[0].rect.bottom
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
