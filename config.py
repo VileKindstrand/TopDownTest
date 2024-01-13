@@ -1,5 +1,5 @@
-WIN_WIDTH = 480
-WIN_HEIGHT = 320
+WIN_WIDTH = 640
+WIN_HEIGHT = 480
 TILESIZE = 32
 FPS = 60
 
@@ -16,14 +16,19 @@ WHITE = (255, 255, 255)
 
 tilemap = [
 
-'BBBBBBBBBBBBBBB',
-'B.............B',
-'B.....BBBB....B',
-'B.............B',
-'B........BB...B',
-'B.....P...B...B',
-'B.BB..........B',
-'B...........BBB',
-'B...B.........B',
-'BBBBBBBBBBBBBBB',
+'BBBBBBBBBBBBBBBBBBBB',
+'B...BBBBBBBB.......B',
+'B...BBBBBBBB.......B',
+'B......BB..........B',
+'B......BB..........B',
+'B......BB..........B',
+'B.....BBBB.........B',
+'B......BB..........B',
+'B..................B',
+'B........P.........B',
+'B..................B',
+'B..................B',
+'B..................B',
+'B..................B',
+'BBBBBBBBBBBBBBBBBBBB',
 ]

@@ -20,13 +20,12 @@ class Player(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
 
-        self.facing = 'down'
+        self.facing = down
 
 
         #utseende
-        image_to_load = pygame.image.load("img/vatten_gecko.png")
         self.image = pygame.Surface([self.width, self.height])
-        self.image.blit(image_to_load, (1,0))
+        self.image.fill(RED)
         #hitbox
         self.rect = self.image.get_rect()
         self.rect.x = self.x
