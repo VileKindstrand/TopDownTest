@@ -9,10 +9,13 @@ class Game:
     def createTilemap(self):
         for x_pos, row in enumerate(tilemap):    # x_pos = tile-x_position  row = tile_värde   for loopen går igenom en rad
             for y_pos, coloumn in enumerate(row):    # y_pos = tile-y_position  går ner till nästa rad (och går tillbaka till första for loop?)
+                Ground(self, y_pos, x_pos)
                 if coloumn == "B":
                     Block(self, y_pos, x_pos)
                 if coloumn == "P":
                     Player(self, y_pos, x_pos)
+                if coloumn == "T":
+                    Trunk(self, y_pos, x_pos)
 
 
 
@@ -21,6 +24,9 @@ class Game:
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))      #skapar skärm
         self.clock = pygame.time.Clock()
         self.running = True
+
+        self.character_spritesheet = Spritesheet("img/vatten_gecko.png")
+        self.terrain_spritesheet = Spritesheet("img/terrain.png")
 
 
     def new(self):
@@ -46,7 +52,7 @@ class Game:
 
 
     def draw(self):
-        self.screen.fill(BLACK)
+        self.screen.fill(GREEN)
         self.all_sprites.draw(self.screen)
         self.clock.tick(FPS)
         pygame.display.update()
