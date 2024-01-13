@@ -25,7 +25,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
 
-        self.character_spritesheet = Spritesheet("img/vatten_gecko.png")
+        self.character_spritesheet = Spritesheet("img/vatten_gecko_V3.png")
         self.terrain_spritesheet = Spritesheet("img/terrain.png")
 
 

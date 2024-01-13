@@ -1,7 +1,9 @@
+from turtle import delay
 import pygame
 from config import *
 import math
 import random
+import time
 
 class Spritesheet:
     def __init__(self, file):
@@ -29,19 +31,20 @@ class Player(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
 
-        self.facing = 'down'
-
+        self.animation_loop = 1  
+        self.facing = 'right'    
 
         #spelarens utseende
-        self.image = self.game.character_spritesheet.get_sprite(1, 0, 32, 48)
+        self.image = self.game.character_spritesheet.get_sprite(33, 0, 32, 48)
         #hitbox
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
 
     def update(self):
+
         self.movement()
-        
+        self.animation()
 
         self.rect.x += self.x_change         # VID DIAGONAL LINJE RÖR MAN SIG SNABBARE; FIXA "NORMALIZED VECTOR". Vet dock inte hur det här fungerar än
         self.collide_blocks('x')
@@ -50,6 +53,9 @@ class Player(pygame.sprite.Sprite):
 
         self.y_change = 0
         self.x_change = 0
+
+        self.facing = 'left'
+
 
 
     def movement(self):
@@ -83,6 +89,61 @@ class Player(pygame.sprite.Sprite):
                     self.rect.y = hits[0].rect.top - self.rect.height    #vid kollision mellan block och player kommer spelaren först teleporteras in i blocket och sedan flyttas en tiles längd tillbaka där spelaren kom ifrån, vilket kommer leda till att spelaren hamnar vid blockets vägg
                 if self.y_change < 0:
                     self.rect.y = hits[0].rect.bottom
+
+    def animation(self):
+        
+        left_animation = [self.game.character_spritesheet.get_sprite(1, 0, self.width, 48),          #degposition
+                          self.game.character_spritesheet.get_sprite(33, 0, self.width, 48),         #låg hopp
+                          self.game.character_spritesheet.get_sprite(66, 0, self.width, 48)]      #hög hopp
+
+        right_animation = [self.game.character_spritesheet.get_sprite(1, 0, self.width, 48),
+                          self.game.character_spritesheet.get_sprite(33, 0, self.width, 48),         
+                          self.game.character_spritesheet.get_sprite(66, 0, self.width, 48)]
+
+        up_animation = [self.game.character_spritesheet.get_sprite(1, 0, self.width, 48),         
+                          self.game.character_spritesheet.get_sprite(33, 0, self.width, 48),      
+                          self.game.character_spritesheet.get_sprite(66, 0, self.width, 48)]      
+
+        down_animation = [self.game.character_spritesheet.get_sprite(1, 0, self.width, 48),          
+                          self.game.character_spritesheet.get_sprite(33, 0, self.width, 48),         
+                          self.game.character_spritesheet.get_sprite(66, 0, self.width, 48)]
+
+        if self.facing == "left":
+            if self.x_change == 0:
+                self.image = self.game.character_spritesheet.get_sprite(1, 0, self.width, 48)
+            else:
+                self.image = left_animation[math.floor(self.animation_loop)]
+                self.animation_loop += 0.05
+                if self.animation_loop >= 3:
+                    self.animation_loop = 1
+        if self.facing == "right":
+            if self.x_change == 0:
+                self.image = self.game.character_spritesheet.get_sprite(1, 0, self.width, 48)
+            else:
+                self.image = left_animation[math.floor(self.animation_loop)]
+                self.animation_loop += 0.05
+                if self.animation_loop >= 3:
+                    self.animation_loop = 1
+        if self.facing == "up":
+            if self.x_change == 0:
+                self.image = self.game.character_spritesheet.get_sprite(1, 0, self.width, 48)
+            else:
+                self.image = left_animation[math.floor(self.animation_loop)]
+                self.animation_loop += 0.05
+                if self.animation_loop >= 3:
+                    self.animation_loop = 1
+        if self.facing == "down":
+            if self.x_change == 0:
+                self.image = self.game.character_spritesheet.get_sprite(1, 0, self.width, 48)
+            else:
+                self.image = left_animation[math.floor(self.animation_loop)]
+                self.animation_loop += 0.05
+                if self.animation_loop >= 3:
+                    self.animation_loop = 1
+
+
+
+
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
