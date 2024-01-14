@@ -14,8 +14,13 @@ class Game:
                     Block(self, y_pos, x_pos)
                 if coloumn == "P":
                     Player(self, y_pos, x_pos)
+                    Hitbox(self, y_pos, x_pos)
                 if coloumn == "T":
                     Trunk(self, y_pos, x_pos)
+                if coloumn == "V":
+                    Vile(self, y_pos, x_pos)
+                if coloumn == "K":
+                    Kenny(self, y_pos, x_pos)
 
 
 
@@ -25,8 +30,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
 
-        self.character_spritesheet = Spritesheet("img/vatten_gecko_V3.png")
+        self.character_spritesheet = Spritesheet("img/froggo.png")
         self.terrain_spritesheet = Spritesheet("img/terrain.png")
+        self.villagers_spritesheet = Spritesheet("img/THE_BOYS.png")
 
 
     def new(self):
