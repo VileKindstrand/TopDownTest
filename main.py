@@ -2,8 +2,9 @@ from turtle import left, right
 import pygame
 from sprites import *
 from config import *
+from data_gather import *
+import serial
 import sys
-
 class Game:
 
     def createTilemap(self):
@@ -14,13 +15,8 @@ class Game:
                     Block(self, y_pos, x_pos)
                 if coloumn == "P":
                     Player(self, y_pos, x_pos)
-                    Hitbox(self, y_pos, x_pos)
                 if coloumn == "T":
                     Trunk(self, y_pos, x_pos)
-                if coloumn == "V":
-                    Vile(self, y_pos, x_pos)
-                if coloumn == "K":
-                    Kenny(self, y_pos, x_pos)
 
 
 
@@ -30,9 +26,10 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
 
-        self.character_spritesheet = Spritesheet("img/froggo.png")
+        self.character_spritesheet = Spritesheet("img/vatten_gecko_V3.png")
         self.terrain_spritesheet = Spritesheet("img/terrain.png")
-        self.villagers_spritesheet = Spritesheet("img/THE_BOYS.png")
+
+        #schedule.every(10).seconds.do(self.paper_func)
 
 
     def new(self):
@@ -45,7 +42,6 @@ class Game:
         self.threaten = pygame.sprite.LayeredUpdates()
 
         self.createTilemap()
-
 
     def events(self):
         for event in pygame.event.get():
@@ -65,10 +61,11 @@ class Game:
 
     def main(self):
         #game loop
-        while self.playing:
+        while self.playing:    
             self.events()       #kollar efter input
             self.update()       #uppdaterar skärm
-            self.draw()         #pyntar skiten
+            self.draw()       #pyntar skiten
+
         self.running = False
 
     def game_over(self):
@@ -84,5 +81,6 @@ while g.running:
     g.main()
     g.game_over()
 
+
 pygame.quit()
-sys.exit
+sys.exit()
