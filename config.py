@@ -2,15 +2,18 @@
 import threading
 import serial
 import time
+import pygame
 
 WIN_WIDTH = 640
 WIN_HEIGHT = 480
-TILESIZE = 32
+TILESIZE = 64
 FPS = 60        #egentligen refresh-rate
 
-STANDING_PLAYER = 1, 0, 32, 48
-WALK_1_PLAYER = 34, 0, 32, 48
-WALK_2_PLAYER = 66, 0, 32, 48
+PLAYER_HEIGHT = TILESIZE*1.5
+PLAYER_WIDTH = TILESIZE
+
+SPRITESHEET_WIDTH = 32
+SPRITESHEET_HEIGTH = 32
 
 WATER_LEVEL = 100.0
 PLAYER_LAYER = 3
@@ -32,41 +35,15 @@ tilemap = [
 'B...TTTTTTTT.......B',
 'B..................B',
 'B..............B...B',
-'B..............T...B',
-'B....B.............B',
-'B....T.............B',
-'B..................B',
+'B..............T...BBBBBBBBBBBB',
+'B....B........................B',
+'B....T........................B',
+'B..................BBBBBBBBBBBB',
 'B........P.........B',
 'B..................B',
-'B..................B',
+'B....k.............B',
 'B..................B',
 'B..................B',
 'BBBBBBBBBBBBBBBBBBBB',
 ]
 
-
-ser = serial.Serial('COM3', 9600)
-
-def arduino_input():
-
-    i = 0
-
-    while i < 100:
-        arduino_data = ser.readline().decode("utf-8").strip()   
-        # Convert the received data to a float
-        global sensor_value
-        sensor_value = float(arduino_data)
-        print (sensor_value)
-        i+= 1
-
-x = threading.Thread(target=arduino_input, args=())
-x.start()
-
-def test():
-    i = 0
-    while i < 100:
-        print ("cool")
-        i += 1
-        time.sleep(1)
-y = threading.Thread(target=test, args=())
-y.start()

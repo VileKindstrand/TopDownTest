@@ -2,14 +2,14 @@ from turtle import left, right
 import pygame
 from sprites import *
 from config import *
-from data_gather import *
-import serial
+#from data_gather import *
 import sys
 class Game:
 
     def createTilemap(self):
         for x_pos, row in enumerate(tilemap):    # x_pos = tile-x_position  row = tile_värde   for loopen går igenom en rad
             for y_pos, coloumn in enumerate(row):    # y_pos = tile-y_position  går ner till nästa rad (och går tillbaka till första for loop?)
+
                 Ground(self, y_pos, x_pos)
                 if coloumn == "B":
                     Block(self, y_pos, x_pos)
@@ -17,19 +17,19 @@ class Game:
                     Player(self, y_pos, x_pos)
                 if coloumn == "T":
                     Trunk(self, y_pos, x_pos)
-
+                if coloumn == "K":
+                    Kenny(self, y_pos, x_pos)
 
 
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))      #skapar skärm
+        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)      #skapar skärm
         self.clock = pygame.time.Clock()
         self.running = True
 
-        self.character_spritesheet = Spritesheet("img/vatten_gecko_V3.png")
+        self.character_spritesheet = Spritesheet("img/gecko_spritesheet.png")
         self.terrain_spritesheet = Spritesheet("img/terrain.png")
-
-        #schedule.every(10).seconds.do(self.paper_func)
+        self.villager_spritesheet = Spritesheet("img/villager_spritesheet.png")
 
 
     def new(self):
