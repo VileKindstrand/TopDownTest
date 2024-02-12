@@ -16,11 +16,18 @@ SPRITESHEET_WIDTH = 32
 SPRITESHEET_HEIGTH = 32
 
 WATER_LEVEL = 100.0
-PLAYER_LAYER = 3
+
+TEXT_BOX_LAYER = 5
+PLAYER_LAYER = 4
+NPC_LAYER = 3
 BLOCK_LAYER = 2
 GROUND_LAYER = 1
 
-PLAYER_SPEED = 3
+PLAYER_SPEED = 6
+ENEMY_SPEED = 2
+ENEMY_HUNTING_SPEED = ENEMY_SPEED*2
+
+what = "aaaaaaa"
 
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
@@ -37,12 +44,12 @@ tilemap = [
 'B..............B...B',
 'B..............T...BBBBBBBBBBBB',
 'B....B........................B',
-'B....T........................B',
+'B....T.......E................B',
 'B..................BBBBBBBBBBBB',
 'B........P.........B',
 'B..................B',
-'B....k.............B',
-'B..................B',
+'B....K.............B',
+'B..............E...B',
 'B..................B',
 'BBBBBBBBBBBBBBBBBBBB',
 ]

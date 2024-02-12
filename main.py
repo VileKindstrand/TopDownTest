@@ -1,10 +1,10 @@
-from turtle import left, right
+from turtle import left, right, screensize
 import pygame
 from sprites import *
 from config import *
 #from data_gather import *
 import sys
-class Game:
+class Game(Spritesheet):
 
     def createTilemap(self):
         for x_pos, row in enumerate(tilemap):    # x_pos = tile-x_position  row = tile_värde   for loopen går igenom en rad
@@ -19,11 +19,16 @@ class Game:
                     Trunk(self, y_pos, x_pos)
                 if coloumn == "K":
                     Kenny(self, y_pos, x_pos)
+                if coloumn == "E":
+                    Enemy(self, y_pos, x_pos)
 
 
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)      #skapar skärm
+        #self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)      #skapar skärm
+        self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+        global screen
+        screen = self.screen
         self.clock = pygame.time.Clock()
         self.running = True
 
@@ -31,19 +36,20 @@ class Game:
         self.terrain_spritesheet = Spritesheet("img/terrain.png")
         self.villager_spritesheet = Spritesheet("img/villager_spritesheet.png")
 
-
     def new(self):
         #nytt spel startar
         self.playing = True
-
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.blocks = pygame.sprite.LayeredUpdates()
         self.villagers = pygame.sprite.LayeredUpdates()
-        self.threaten = pygame.sprite.LayeredUpdates()
+        self.enemies = pygame.sprite.LayeredUpdates()
+        #self.threaten = pygame.sprite.LayeredUpdates()
+        self.text_box = pygame.sprite.LayeredUpdates()
 
         self.createTilemap()
 
     def events(self):
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -55,13 +61,13 @@ class Game:
 
     def draw(self):
         self.screen.fill(GREEN)
-        self.all_sprites.draw(self.screen)
+        self.all_sprites.draw(self.screen)            
         self.clock.tick(FPS)
         pygame.display.update()
 
     def main(self):
         #game loop
-        while self.playing:    
+        while self.playing:                             
             self.events()       #kollar efter input
             self.update()       #uppdaterar skärm
             self.draw()       #pyntar skiten
