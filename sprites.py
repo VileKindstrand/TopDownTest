@@ -169,6 +169,7 @@ class Player(pygame.sprite.Sprite, Text_box):
         y_change = self.y_change
         x_change = self.x_change
             #self.facing = 'down'
+        print(self.rect.y)
 
 
 
@@ -334,9 +335,12 @@ class Ground(pygame.sprite.Sprite):
         self.width = SPRITESHEET_WIDTH
         self.height =  SPRITESHEET_WIDTH
 
-        self.image = self.game.terrain_spritesheet.get_sprite(0, 0, self.width, self.height)
-        self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
+        if WATER_LEVEL > 50:
+            self.image = self.game.terrain_spritesheet.get_sprite(0, 0, self.width, self.height)
+        else:
+            self.image = self.game.terrain_spritesheet.get_sprite(0, 96, self.width, self.height)
 
+        self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y 
@@ -362,7 +366,9 @@ class Kenny(pygame.sprite.Sprite):
         self.rect.x = self.x
         self.rect.y = self.y 
 
-class Enemy(pygame.sprite.Sprite):
+
+
+class Enemy(Player):
     def __init__(self, game, x, y):
 
         self.game = game
@@ -379,11 +385,11 @@ class Enemy(pygame.sprite.Sprite):
         self.y_change = 0
 
         self.facing = 'right'
-        self.aimation_loop = 1
+        self.animation_loop = 1
         self.movement_loop = 0
         self.max_travel = (100)
 
-        self.image = self.game.villager_spritesheet.get_sprite(65, 0, SPRITESHEET_WIDTH, SPRITESHEET_HEIGTH*1.5)
+        self.image = self.game.enemy_spritesheet.get_sprite(0, 0, SPRITESHEET_WIDTH, SPRITESHEET_HEIGTH)
         self.image.set_colorkey(BLACK)
         self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
 
@@ -395,6 +401,7 @@ class Enemy(pygame.sprite.Sprite):
     def update(self):
         
         self.movement()
+        self.animation()
         
         self.rect.x += self.x_change
         self.rect.y += self.y_change
@@ -403,6 +410,9 @@ class Enemy(pygame.sprite.Sprite):
         self.y_change = 0
 
     def movement(self):
+
+        global distance_x
+        global distance_y
         distance_x = 100 - self.x
         distance_y = 100 - self.y
         distance_player = (distance_x ** 2 + distance_y ** 2) ** 0.5
@@ -414,7 +424,10 @@ class Enemy(pygame.sprite.Sprite):
                 self.rect.y += ENEMY_HUNTING_SPEED * distance_y / distance_player
         else:
             self.rect.x += ENEMY_SPEED * distance_x / distance_base
-            self.rect.x += ENEMY_SPEED * distance_x / distance_base            
+            self.rect.x += ENEMY_SPEED * distance_x / distance_base  
+
+
+
         #if self.facing == 'left':
         #    self.x_change -= ENEMY_SPEED
         #    self.movement_loop -= 1
@@ -427,3 +440,23 @@ class Enemy(pygame.sprite.Sprite):
         #    self.movement_loop += 1
         #    if self.movement_loop >= self.max_travel:
         #        self.facing = 'left'
+
+
+    def animation(self):
+        
+        left_animation = [(self.game.enemy_spritesheet.get_sprite(0, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 0, 32, 32))]
+        right_animation = [(self.game.enemy_spritesheet.get_sprite(64, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 32, 32, 32))]
+
+        if distance_x > 0:
+            self.image = left_animation[math.floor(self.animation_loop)]
+            self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+            self.animation_loop += 0.05
+            if self.animation_loop >= 3:
+                self.animation_loop = 1
+
+        if distance_x < 0:
+            self.image = right_animation[math.floor(self.animation_loop)]
+            self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+            self.animation_loop += 0.05
+            if self.animation_loop >= 3:
+                self.animation_loop = 1

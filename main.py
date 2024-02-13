@@ -35,6 +35,7 @@ class Game(Spritesheet):
         self.character_spritesheet = Spritesheet("img/gecko_spritesheet.png")
         self.terrain_spritesheet = Spritesheet("img/terrain.png")
         self.villager_spritesheet = Spritesheet("img/villager_spritesheet.png")
+        self.enemy_spritesheet = Spritesheet("img/enemy_spritesheet.png")
 
     def new(self):
         #nytt spel startar

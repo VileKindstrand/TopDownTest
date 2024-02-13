@@ -27,8 +27,6 @@ PLAYER_SPEED = 6
 ENEMY_SPEED = 2
 ENEMY_HUNTING_SPEED = ENEMY_SPEED*2
 
-what = "aaaaaaa"
-
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
