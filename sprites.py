@@ -100,9 +100,10 @@ class Player(pygame.sprite.Sprite, Text_box):
         self.rect.y += self.y_change
         self.collide_blocks('y')
 
+        global y_change
+        global x_change
         self.y_change = 0
         self.x_change = 0
-
         global player_x_pos
         global player_y_pos
         player_x_pos = self.rect.x
@@ -116,40 +117,59 @@ class Player(pygame.sprite.Sprite, Text_box):
 
         
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.x_change  -= PLAYER_SPEED
+
+        if keys[pygame.K_UP] and keys[pygame.K_LEFT]:
+            for sprite in self.game.all_sprites:
+                sprite.rect.x += PLAYER_SPEED / (2 ** 0.5)
+                sprite.rect.y += PLAYER_SPEED / (2 ** 0.5)
+            self.y_change -= PLAYER_SPEED / (2 ** 0.5)
+            self.x_change  -= PLAYER_SPEED / (2 ** 0.5)
+            self.facing = 'left'
+        elif keys[pygame.K_UP] and keys[pygame.K_RIGHT]:
+            for sprite in self.game.all_sprites:
+                sprite.rect.x -= PLAYER_SPEED / (2 ** 0.5)
+                sprite.rect.y += PLAYER_SPEED / (2 ** 0.5)
+            self.y_change -= PLAYER_SPEED / (2 ** 0.5)
+            self.x_change  += PLAYER_SPEED / (2 ** 0.5)
+            self.facing = 'right'
+        elif keys[pygame.K_DOWN] and keys[pygame.K_LEFT]:
+            for sprite in self.game.all_sprites:
+                sprite.rect.x += PLAYER_SPEED / (2 ** 0.5)
+                sprite.rect.y -= PLAYER_SPEED / (2 ** 0.5)
+            self.y_change += PLAYER_SPEED / (2 ** 0.5)
+            self.x_change  -= PLAYER_SPEED / (2 ** 0.5)
+            self.facing = 'left'
+        elif keys[pygame.K_DOWN] and keys[pygame.K_RIGHT]:
+            for sprite in self.game.all_sprites:
+                sprite.rect.x -= PLAYER_SPEED / (2 ** 0.5)
+                sprite.rect.y -= PLAYER_SPEED / (2 ** 0.5)
+            self.y_change += PLAYER_SPEED / (2 ** 0.5)
+            self.x_change += PLAYER_SPEED / (2 ** 0.5)
+            self.facing = 'right'
+        elif keys[pygame.K_LEFT]:
             for sprite in self.game.all_sprites:
                 sprite.rect.x += PLAYER_SPEED
+            self.x_change  -= PLAYER_SPEED
             self.facing = 'left'
-        if keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_RIGHT]:
             for sprite in self.game.all_sprites:
                 sprite.rect.x -= PLAYER_SPEED
-            #self.x_change += PLAYER_SPEED
+            self.x_change += PLAYER_SPEED
             self.facing = 'right'
-        if keys[pygame.K_UP]:
+        elif keys[pygame.K_UP]:
             for sprite in self.game.all_sprites:
                 sprite.rect.y += PLAYER_SPEED
             self.y_change -= PLAYER_SPEED
-            #self.facing = 'up'
-        if keys[pygame.K_DOWN]:
+        elif keys[pygame.K_DOWN]:
             for sprite in self.game.all_sprites:
                 sprite.rect.y -= PLAYER_SPEED
             self.y_change += PLAYER_SPEED
+        global y_change
+        global x_change
+        y_change = self.y_change
+        x_change = self.x_change
             #self.facing = 'down'
-        if keys[pygame.K_DOWN] and keys[pygame.K_LEFT]:
-            for sprite in self.game.all_sprites:
-                sprite.rect.x += PLAYER_SPEED**0.5
-                sprite.rect.x += PLAYER_SPEED**0.5
-            self.facing = 'left'
-        if keys[pygame.K_DOWN] and keys[pygame.K_RIGHT]:
-            pass
-        if keys[pygame.K_UP] and keys[pygame.K_LEFT]:
-            for sprite in self.game.all_sprites:
-                sprite.rect.x += PLAYER_SPEED ** 0.5
-                sprite.rect.x -= PLAYER_SPEED ** 0.5
-            self.facing = 'left'
-        if keys[pygame.K_UP] and keys[pygame.K_RIGHT]:
-            pass
+
 
 
     def interact_villagers(self):
@@ -180,12 +200,11 @@ class Player(pygame.sprite.Sprite, Text_box):
                 if self.x_change > 0:
                     self.rect.x = hits[0].rect.left - self.rect.width       #vid kollision mellan block och player kommer spelaren först teleporteras in i blocket och sedan flyttas en tiles längd tillbaka där spelaren kom ifrån, vilket kommer leda till att spelaren hamnar vid blockets vägg
                     for sprite in self.game.all_sprites:
-                        sprite.rect.x += PLAYER_SPEED
-
+                        sprite.rect.x += x_change
                 if self.x_change < 0:
                     self.rect.x = hits[0].rect.right
                     for sprite in self.game.all_sprites:
-                        sprite.rect.x -= PLAYER_SPEED
+                        sprite.rect.x += x_change
                 
         if direction == "y":
             hits = pygame.sprite.spritecollide(self, self.game.blocks, False)
@@ -193,11 +212,11 @@ class Player(pygame.sprite.Sprite, Text_box):
                 if self.y_change > 0:
                     self.rect.y = hits[0].rect.top - self.rect.height    #vid kollision mellan block och player kommer spelaren först teleporteras in i blocket och sedan flyttas en tiles längd tillbaka där spelaren kom ifrån, vilket kommer leda till att spelaren hamnar vid blockets vägg
                     for sprite in self.game.all_sprites:
-                        sprite.rect.y += PLAYER_SPEED
+                        sprite.rect.y += y_change
                 if self.y_change < 0:
                     self.rect.y = hits[0].rect.bottom
                     for sprite in self.game.all_sprites:
-                        sprite.rect.y -= PLAYER_SPEED
+                        sprite.rect.y += y_change
 
     def animation(self):
         
