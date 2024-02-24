@@ -29,7 +29,7 @@ GROUND_LAYER = 1
 
 PROJECTILE_SPEED = TILESIZE / 4
 PLAYER_SPEED = TILESIZE / 10
-ENEMY_SPEED = TILESIZE / 16
+ENEMY_SPEED = TILESIZE / 48
 ENEMY_HUNTING_SPEED = ENEMY_SPEED * 1.5
 
 RED = (255, 0, 0)
@@ -42,15 +42,15 @@ tilemap = [
 
 'BBBBBBBBBBBBBBBBBBBB',
 'BTTTBBBBBBBBTTTTTTTB',
-'B...TTTTTTTT.......B',
+'B...TTTTTTTT..E....B',
 'B..................B',
 'B..............B...B',
-'B.....P..E.....T...B',
+'B.....P........T...B',
 'B....B.............B',
 'B....T....W........B',
 'B..................B',
 'B..................B',
-'B..................B',
+'B................E.B',
 'B....K.............B',
 'B..................B',
 'B..................B',

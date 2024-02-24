@@ -24,7 +24,7 @@ class Game(Spritesheet):
                 if coloumn == "E":
                     Enemy(self, y_pos, x_pos)
                 if coloumn == "W":
-                    Waterjug(self, y_pos, x_pos)
+                    self.waterjug = Waterjug(self, y_pos, x_pos)
 
 
     def __init__(self):
@@ -105,8 +105,8 @@ class Game(Spritesheet):
             self.events()       #kollar efter input
             self.update()       #uppdaterar skärm
             self.draw()       #pyntar skiten
-            # if self.player_hp < 0 or self.water_level < 0:
-            #     self.playing = False
+            if self.player_hp < 0 or self.water_level < 0:
+                self.playing = False
 
 
 

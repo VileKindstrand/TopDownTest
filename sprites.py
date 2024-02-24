@@ -209,7 +209,7 @@ class Player(pygame.sprite.Sprite):
         hits = pygame.sprite.spritecollide(self, self.game.enemies, False)
         if hits:
             self.game.player_hp -= 1
-            #print(self.game.player_hp)
+            print(self.game.player_hp)
 
 
     def collide_blocks(self, direction):
@@ -408,6 +408,7 @@ class Enemy(Player):
         self.enemy_true_x = self.x
         self.enemy_true_y = self.y
 
+
         self.x_change = 0
         self.y_change = 0
 
@@ -429,6 +430,7 @@ class Enemy(Player):
         
         self.movement()
         self.animation()
+        self.collision_blocks()
         
         self.rect.x += self.x_change
         self.enemy_true_x += self.x_change
@@ -440,16 +442,19 @@ class Enemy(Player):
 
     def movement(self):
 
-        self.distance_x = self.game.player.player_true_x - self.rect.x
-        self.distance_y = self.game.player.player_true_y - self.rect.y
+        self.distance_x = self.game.waterjug.rect.x - self.rect.x
+        self.distance_y = self.game.waterjug.rect.y - self.rect.y
         self.distance = (self.distance_x ** 2 +self.distance_y ** 2) ** 0.5
 
 
-        #     if distance != 0:
-        #         self.enemy_true_x += ENEMY_SPEED * self.distance_x / self.distance
-        #         self.rect.x += ENEMY_SPEED * self.distance_x / self.distance
-        #         self.enemy_true_y += ENEMY_SPEED * self.distance_y / self.distance
-        #         self.rect.y += ENEMY_SPEED * self.distance_y / self.distance
+        if distance != 0:
+            self.x_change += ENEMY_SPEED * self.distance_x / self.distance
+            self.y_change += ENEMY_SPEED * self.distance_y / self.distance
+
+            # self.enemy_true_x += ENEMY_SPEED * self.distance_x / self.distance
+            # self.rect.x += ENEMY_SPEED * self.distance_x / self.distance
+            # self.enemy_true_y += ENEMY_SPEED * self.distance_y / self.distance
+            # self.rect.y += ENEMY_SPEED * self.distance_y / self.distance
 
         # self.distance_x = self.game.player.player_true_x - self.enemy_true_x
         # self.distance_y = self.game.player.player_true_y - self.enemy_true_y
@@ -470,19 +475,28 @@ class Enemy(Player):
         #     self.rect.x += ENEMY_SPEED * distance_x / distance_base
         #     self.rect.x += ENEMY_SPEED * distance_x / distance_base  
 
-# ANNAT MOVEMENT SYSTEM
+# # ANNAT MOVEMENT SYSTEM
 
-        if self.facing == 'left':
-           self.x_change -= ENEMY_SPEED
-           self.movement_loop -= 1
-           if self.movement_loop <= -self.max_travel:
-               self.facing = 'right'
+#         if self.facing == 'left':
+#            self.x_change -= ENEMY_SPEED
+#            self.movement_loop -= 1
+#            if self.movement_loop <= -self.max_travel:
+#                self.facing = 'right'
 
-        if self.facing == 'right':
-           self.x_change += ENEMY_SPEED
-           self.movement_loop += 1
-           if self.movement_loop >= self.max_travel:
-               self.facing = 'left'
+#         if self.facing == 'right':
+#            self.x_change += ENEMY_SPEED
+#            self.movement_loop += 1
+#            if self.movement_loop >= self.max_travel:
+#                self.facing = 'left'
+
+    def collision_blocks(self):
+        hits = pygame.sprite.spritecollide(self, self.game.waterjugs, False)
+        if hits:
+            self.game.water_level -= 0.05
+            print(self.game.water_level)
+            self.x_change = 0
+            self.y_change = 0
+            
 
 
     def animation(self):
@@ -529,8 +543,8 @@ class Attack(pygame.sprite.Sprite):
         self.height = TILESIZE
 
         self.facing = self.game.player.facing
-        self.game.water_level -= 5
-        print (self.game.water_level)
+        self.game.player_hp -= 5
+        print (self.game.player_hp)
 
         self.animation_loop = 0
         self.image = self.game.enemy_spritesheet.get_sprite(32, 0, self.width, self.height)
@@ -587,3 +601,5 @@ class Attack(pygame.sprite.Sprite):
             if self.animation_loop >= 3:
                 #self.kill()
                 self.animation_loop = 0
+
+
