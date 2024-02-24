@@ -14,6 +14,8 @@ PLAYER_WIDTH = TILESIZE
 
 SPRITESHEET_WIDTH = 32
 SPRITESHEET_HEIGTH = 32
+PROJECTILE_WIDTH = TILESIZE / 2
+PROJECTILE_HEIGHT = TILESIZE / 2
 
 FIRST_WATER_LEVEL = 100.0
 FIRST_PLAYER_HP = 100.0
@@ -25,9 +27,10 @@ NPC_LAYER = 3
 BLOCK_LAYER = 2
 GROUND_LAYER = 1
 
-PLAYER_SPEED = 6
-ENEMY_SPEED = 2
-ENEMY_HUNTING_SPEED = ENEMY_SPEED*2
+PROJECTILE_SPEED = TILESIZE / 4
+PLAYER_SPEED = TILESIZE / 10
+ENEMY_SPEED = TILESIZE / 16
+ENEMY_HUNTING_SPEED = ENEMY_SPEED * 1.5
 
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
@@ -42,14 +45,14 @@ tilemap = [
 'B...TTTTTTTT.......B',
 'B..................B',
 'B..............B...B',
-'B.....P........T...B',
+'B.....P..E.....T...B',
 'B....B.............B',
 'B....T....W........B',
 'B..................B',
 'B..................B',
 'B..................B',
 'B....K.............B',
-'B...............E..B',
+'B..................B',
 'B..................B',
 'BBBBBBBBBBBBBBBBBBBB',
 ]

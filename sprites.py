@@ -209,7 +209,7 @@ class Player(pygame.sprite.Sprite):
         hits = pygame.sprite.spritecollide(self, self.game.enemies, False)
         if hits:
             self.game.player_hp -= 1
-            print(self.game.player_hp)
+            #print(self.game.player_hp)
 
 
     def collide_blocks(self, direction):
@@ -344,15 +344,31 @@ class Ground(pygame.sprite.Sprite):
         self.width = SPRITESHEET_WIDTH
         self.height =  SPRITESHEET_WIDTH
 
+        self.image = self.game.terrain_spritesheet.get_sprite(0, 0, self.width, self.height)
+        self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
+
         if self.game.water_level > 50:
             self.image = self.game.terrain_spritesheet.get_sprite(0, 0, self.width, self.height)
+            self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
         else:
-            self.image = self.game.terrain_spritesheet.get_sprite(0, 96, self.width, self.height)
+            self.image = self.game.terrain_spritesheet.get_sprite(0, 128, self.width, self.height)
+            self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
 
         self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y 
+
+    def update(self):
+        self.animation()
+
+    def animation(self):
+        if self.game.water_level > 50:
+            self.image = self.game.terrain_spritesheet.get_sprite(0, 0, self.width, self.height)
+            self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
+        else:
+            self.image = self.game.terrain_spritesheet.get_sprite(0, 96, self.width, self.height)
+            self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
 
 class Kenny(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -473,17 +489,27 @@ class Enemy(Player):
         
         left_animation = [(self.game.enemy_spritesheet.get_sprite(0, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 0, 32, 32))]
         right_animation = [(self.game.enemy_spritesheet.get_sprite(64, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 32, 32, 32))]
+        right_dry_animation = [(self.game.enemy_spritesheet.get_sprite(0, 64, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 64, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 64, 32, 32))]
+        left_dry_animation = [(self.game.enemy_spritesheet.get_sprite(64, 96, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 96, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 96, 32, 32))]
 
         if self.distance_x > 0:
-            self.image = left_animation[math.floor(self.animation_loop)]
-            self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
-            self.animation_loop += 0.05
+            if self.game.water_level > 50:
+                self.image = left_animation[math.floor(self.animation_loop)]
+                self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+            else:
+                self.image = left_dry_animation[math.floor(self.animation_loop)]
+                self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+                self.animation_loop += 0.05
             if self.animation_loop >= 3:
                 self.animation_loop = 1
 
         if self.distance_x < 0:
-            self.image = right_animation[math.floor(self.animation_loop)]
-            self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+            if self.game.water_level > 50:
+                self.image = right_animation[math.floor(self.animation_loop)]
+                self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+            else:
+                self.image = right_dry_animation[math.floor(self.animation_loop)]
+                self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
             self.animation_loop += 0.05
             if self.animation_loop >= 3:
                 self.animation_loop = 1
@@ -497,15 +523,18 @@ class Attack(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites, self.game.attacks
         pygame.sprite.Sprite.__init__(self, self.groups)
 
-
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
+        self.x = x 
+        self.y = y
         self.width = TILESIZE
         self.height = TILESIZE
 
+        self.facing = self.game.player.facing
+        self.game.water_level -= 5
+        print (self.game.water_level)
+
         self.animation_loop = 0
         self.image = self.game.enemy_spritesheet.get_sprite(32, 0, self.width, self.height)
-        self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+        self.image = pygame.transform.scale(self.image, (PROJECTILE_WIDTH, PROJECTILE_HEIGHT))
 
         self.rect = self.image.get_rect()
         self.rect.x = self.x
@@ -514,11 +543,32 @@ class Attack(pygame.sprite.Sprite):
     def update(self):
         self.animation()
         self.collide()
+        self.velocity()
+        
+        #print(self.rect.x)
+        #print (self.game.all_sprites)
+
+
+    def velocity(self):
+        pass
+        if self.facing == 'right':
+            self.rect.x += PROJECTILE_SPEED
+        if self.facing == 'left':
+            self.rect.x -= PROJECTILE_SPEED
+        if self.facing == 'down':
+            self.rect.y += PROJECTILE_SPEED
+        if self.facing == 'up':
+            self.rect.y -= PROJECTILE_SPEED
+
 
     def collide(self):
-        hits = pygame.sprite.spritecollide(self, self.game.enemies, True)
-    
+        hits_enemy = pygame.sprite.spritecollide(self, self.game.enemies, True)
+        hits_block = pygame.sprite.spritecollide(self, self.game.blocks, False)
+        if hits_block or hits_enemy:
+            self.kill()
+
     def animation(self):
+        # print ("animation")
         direction = self.game.player.facing
 
         right_animation = [(self.game.enemy_spritesheet.get_sprite(0, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 0, 32, 32))]
@@ -528,10 +578,12 @@ class Attack(pygame.sprite.Sprite):
             self.image = left_animation[math.floor(self.animation_loop)]
             self.animation_loop += 0.5
             if self.animation_loop >= 3:
-                self.kill()
+                # self.kill()
+                self.animation_loop = 0
 
         if direction == 'right':
             self.image = right_animation[math.floor(self.animation_loop)]
             self.animation_loop += 0.5
             if self.animation_loop >= 3:
-                self.kill()
+                #self.kill()
+                self.animation_loop = 0

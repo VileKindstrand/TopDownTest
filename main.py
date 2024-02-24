@@ -69,9 +69,9 @@ class Game(Spritesheet):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if self.player.facing == 'left':
-                        Attack(self, self.player.rect.x - TILESIZE, self.player.rect.y)
+                        Attack(self, self.player.rect.x - PROJECTILE_WIDTH, self.player.rect.y + PLAYER_HEIGHT / 2)
                     if self.player.facing == 'right':
-                        Attack(self, self.player.rect.x  + TILESIZE, self.player.rect.y)
+                        Attack(self, self.player.rect.x + PLAYER_WIDTH, self.player.rect.y + PLAYER_HEIGHT / 2)
                     
 
     def arduino_input(self):
@@ -87,6 +87,7 @@ class Game(Spritesheet):
 
     def update(self):
         self.all_sprites.update()
+        #print(self.player.player_true_x)
 
 
 
@@ -104,8 +105,8 @@ class Game(Spritesheet):
             self.events()       #kollar efter input
             self.update()       #uppdaterar skärm
             self.draw()       #pyntar skiten
-            if self.player_hp < 0 or self.water_level < 0:
-                self.playing = False
+            # if self.player_hp < 0 or self.water_level < 0:
+            #     self.playing = False
 
 
 
