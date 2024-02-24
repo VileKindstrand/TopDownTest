@@ -2,6 +2,7 @@ from turtle import delay, distance
 import pygame
 from config import *
 import math
+import random
 
 
 
@@ -188,7 +189,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if hits:
             if keys[pygame.K_LCTRL]:
-                if self.game.player_hp < 100:
+                if self.game.player_hp < FIRST_PLAYER_HP:
                     self.game.water_level -= WATER_EXCHANGE
                     self.game.player_hp += WATER_EXCHANGE
                     print(self.game.water_level, self.game.player_hp)
@@ -208,8 +209,9 @@ class Player(pygame.sprite.Sprite):
 
         hits = pygame.sprite.spritecollide(self, self.game.enemies, False)
         if hits:
-            self.game.player_hp -= 1
-            print(self.game.player_hp)
+                self.game.player_hp -= ENEMY_DAMAGE
+                print(self.game.player_hp)
+
 
 
     def collide_blocks(self, direction):
@@ -316,7 +318,7 @@ class Trunk(pygame.sprite.Sprite):
 
         self.game = game
         self._layer = GROUND_LAYER
-        self.groups = self.game.all_sprites
+        self.groups = self.game.all_sprites, self.game.trunks
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         self.x = x * TILESIZE
@@ -330,6 +332,9 @@ class Trunk(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y 
+
+    def update(self):
+        pass
 
 class Ground(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -425,6 +430,8 @@ class Enemy(Player):
         self.rect.x = self.x
         self.rect.y = self.y 
 
+
+        
 
     def update(self):
         

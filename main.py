@@ -18,11 +18,12 @@ class Game(Spritesheet):
                 if coloumn == "P":
                     self.player = Player(self, y_pos, x_pos)
                 if coloumn == "T":
-                    Trunk(self, y_pos, x_pos)
+                    self.trunk = Trunk(self, y_pos, x_pos)
+                    self.trunk_list.append(self.trunk)
                 if coloumn == "K":
                     Kenny(self, y_pos, x_pos)
                 if coloumn == "E":
-                    Enemy(self, y_pos, x_pos)
+                    self.enemy = Enemy(self, y_pos, x_pos)
                 if coloumn == "W":
                     self.waterjug = Waterjug(self, y_pos, x_pos)
 
@@ -41,6 +42,7 @@ class Game(Spritesheet):
         
         self.water_level = FIRST_WATER_LEVEL
         self.player_hp = FIRST_PLAYER_HP
+        self.trunk_list = []
 
         self.character_spritesheet = Spritesheet("img/gecko_spritesheet.png")
         self.terrain_spritesheet = Spritesheet("img/terrain.png")
@@ -55,7 +57,7 @@ class Game(Spritesheet):
         self.villagers = pygame.sprite.LayeredUpdates()
         self.enemies = pygame.sprite.LayeredUpdates()
         self.attacks = pygame.sprite.LayeredUpdates()
-        self.text_box = pygame.sprite.LayeredUpdates()
+        self.trunks = pygame.sprite.LayeredUpdates()
         self.waterjugs = pygame.sprite.LayeredUpdates()
 
         self.createTilemap()
@@ -71,7 +73,11 @@ class Game(Spritesheet):
                     if self.player.facing == 'left':
                         Attack(self, self.player.rect.x - PROJECTILE_WIDTH, self.player.rect.y + PLAYER_HEIGHT / 2)
                     if self.player.facing == 'right':
-                        Attack(self, self.player.rect.x + PLAYER_WIDTH, self.player.rect.y + PLAYER_HEIGHT / 2)
+                        Attack(self, self.player.rect.x + PLAYER_WIDTH, self.player.rect.y + PLAYER_HEIGHT / 2) 
+                if event.key == pygame.K_TAB:
+                    print (random.randint(1, len(self.trunks)))
+                    print ()
+                    Enemy(self, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.x / TILESIZE, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.y / TILESIZE) 
                     
 
     def arduino_input(self):
@@ -79,14 +85,20 @@ class Game(Spritesheet):
             #print ("arduino_input")
             # self.arduino_data = self.ser.readline().decode("utf-8").strip()   
             # # Convert the received data to a float
-            # global sensor_value
+            # self.sensor_value
             # sensor_value = float(self.arduino_data)
-            # print (sensor_value)
+            # self.water_level -= 10
         pass
 
+    def random_spawn(self):
+        self.spawn_rate = random.randint(1, FPS * int(self.water_level / 20))
+        if self.water_level > 30:
+            if self.spawn_rate == 10:
+                Enemy(self, self.trunk.rect.x / TILESIZE, self.trunk.rect.y / TILESIZE) 
 
     def update(self):
         self.all_sprites.update()
+        self.random_spawn()
         #print(self.player.player_true_x)
 
 
