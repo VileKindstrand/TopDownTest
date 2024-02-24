@@ -3,6 +3,9 @@ import pygame
 from config import *
 import math
 
+
+
+
 class Spritesheet:
     def __init__(self, file):
         self.sheet = pygame.image.load(file).convert()
@@ -12,6 +15,96 @@ class Spritesheet:
         sprite.blit(self.sheet, (0,0), (x, y, width, height))       #JÄVLIGASTE FELET JAG VARIT MED OM: HADE RÅKAT SKRIVA (1,0) VILKET FÖRFLYTTADE ALLA SPRITES MED EN X PIXEL
         sprite.set_colorkey(BLACK)
         return sprite
+
+class Waterjug(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+
+        self.game = game
+        self.x = x * TILESIZE * 4
+        self.y = y * TILESIZE * 2
+        self.width = SPRITESHEET_WIDTH
+        self.height =  SPRITESHEET_HEIGTH
+
+        self._layer = TEXT_BOX_LAYER
+        self.groups = self.game.all_sprites
+        self._layer = BLOCK_LAYER
+        self.groups = self.game.all_sprites, self.game.waterjugs
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.width = SPRITESHEET_WIDTH
+        self.height =  SPRITESHEET_WIDTH
+
+        self.image = self.game.terrain_spritesheet.get_sprite(0, 32, self.width, self.height)
+        self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y 
+
+    def update(self):
+        pass
+        #self.status()
+
+    # def status(self):
+    #     if self.game.water_level < 50:
+    #         self.image = self.game.terrain_spritesheet.get_sprite(0, 32, self.width, self.height)
+    #         self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
+    #     else:
+    #             self.image = self.game.terrain_spritesheet.get_sprite(0, 64, self.width, self.height)
+    #             self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
+
+
+
+
+
+class Attack(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+
+        self.game = game
+        self.groups = self.game.all_sprites, self.game.attacks
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.width = TILESIZE
+        self.height = TILESIZE
+
+        self.animation_loop = 0
+        self.image = self.game.enemy_spritesheet.get_sprite(32, 0, self.width, self.height)
+        self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+    def update(self):
+        self.animation()
+        self.collide()
+
+    def collide(self):
+        hits = pygame.sprite.spritecollide(self, self.game.enemies, True)
+    
+    def animation(self):
+        direction = self.game.player.facing
+
+        right_animation = [(self.game.enemy_spritesheet.get_sprite(0, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 0, 32, 32))]
+        left_animation = [(self.game.enemy_spritesheet.get_sprite(64, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 32, 32, 32))]
+
+        if direction == 'left':
+            self.image = left_animation[math.floor(self.animation_loop)]
+            self.animation_loop += 0.5
+            if self.animation_loop >= 3:
+                self.kill()
+
+        if direction == 'right':
+            self.image = right_animation[math.floor(self.animation_loop)]
+            self.animation_loop += 0.5
+            if self.animation_loop >= 3:
+                self.kill()
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -42,8 +135,8 @@ class Player(pygame.sprite.Sprite):
         
         
         self.rect = self.image.get_rect()
-        self.rect.x = self.x -100
-        self.rect.y = self.y - 300
+        self.rect.x = self.x
+        self.rect.y = self.y
 
         
 
@@ -53,6 +146,8 @@ class Player(pygame.sprite.Sprite):
         self.movement()
         self.animation()
         self.interact_villagers()
+        self.interact_enemies()
+        self.interact_waterjug()
 
         self.rect.x += self.x_change         # VID DIAGONAL LINJE RÖR MAN SIG SNABBARE; FIXA "NORMALIZED VECTOR". Vet dock inte hur det här fungerar än
         self.player_true_x += self.x_change
@@ -138,9 +233,10 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if hits:
             if keys[pygame.K_LCTRL]:
-                self.game.water_level -= WATER_EXCHANGE
-                self.game.gecko_hp += WATER_EXCHANGE
-                print(self.game.water_level, self.game.gecko_hp)
+                if self.game.player_hp < 100:
+                    self.game.water_level -= WATER_EXCHANGE
+                    self.game.player_hp += WATER_EXCHANGE
+                    print(self.game.water_level, self.game.player_hp)
 
     def interact_villagers(self):
         #screen = pygame.display.set_mode([WIN_WIDTH, WIN_HEIGHT])
@@ -157,8 +253,8 @@ class Player(pygame.sprite.Sprite):
 
         hits = pygame.sprite.spritecollide(self, self.game.enemies, False)
         if hits:
-            self.game.gecko_hp -= 1
-            print(self.game.gecko_hp)
+            self.game.player_hp -= 1
+            print(self.game.player_hp)
 
 
     def collide_blocks(self, direction):
@@ -373,38 +469,49 @@ class Enemy(Player):
 
     def movement(self):
 
-        self.distance_x = self.game.player.player_true_x - self.enemy_true_x
-        self.distance_y = self.game.player.player_true_y - self.enemy_true_y
-        self.distance_player = (self.distance_x ** 2 + self.distance_y ** 2) ** 0.5
-        self.distance_base = (self.distance_x ** 2 + self.distance_y ** 2) **0.5
-        print (self.game.player.player_true_x, self.enemy_true_x)
-        print (self.game.player.player_true_y, self.enemy_true_y)
+        self.distance_x = self.game.player.player_true_x - self.rect.x
+        self.distance_y = self.game.player.player_true_y - self.rect.y
+        self.distance = (self.distance_x ** 2 +self.distance_y ** 2) ** 0.5
+
+
+        #     if distance != 0:
+        #         self.enemy_true_x += ENEMY_SPEED * self.distance_x / self.distance
+        #         self.rect.x += ENEMY_SPEED * self.distance_x / self.distance
+        #         self.enemy_true_y += ENEMY_SPEED * self.distance_y / self.distance
+        #         self.rect.y += ENEMY_SPEED * self.distance_y / self.distance
+
+        # self.distance_x = self.game.player.player_true_x - self.enemy_true_x
+        # self.distance_y = self.game.player.player_true_y - self.enemy_true_y
+        # self.distance_player = (self.distance_x ** 2 + self.distance_y ** 2) ** 0.5
+        # self.distance_base = (self.distance_x ** 2 + self.distance_y ** 2) **0.5
+        # print (self.game.player.player_true_x, self.enemy_true_x)
+        # print (self.game.player.player_true_y, self.enemy_true_y)
 
         # if distance_player < 100:      
         #     if distance_player != 0:
-        self.x_change += ENEMY_SPEED * self.distance_x / self.distance_player
-        self.enemy_true_x += ENEMY_SPEED * self.distance_x / self.distance_player
-        self.y_change += ENEMY_SPEED * self.distance_y / self.distance_player
-        self.enemy_true_y += ENEMY_SPEED * self.distance_y / self.distance_player
+        # self.x_change += ENEMY_SPEED * self.distance_x / self.distance_player
+        # self.enemy_true_x += ENEMY_SPEED * self.distance_x / self.distance_player
+        # self.y_change += ENEMY_SPEED * self.distance_y / self.distance_player
+        # self.enemy_true_y += ENEMY_SPEED * self.distance_y / self.distance_player
 
         # print (self.distance_x, self.distance_y)
         # else:
         #     self.rect.x += ENEMY_SPEED * distance_x / distance_base
         #     self.rect.x += ENEMY_SPEED * distance_x / distance_base  
 
+# ANNAT MOVEMENT SYSTEM
 
+        if self.facing == 'left':
+           self.x_change -= ENEMY_SPEED
+           self.movement_loop -= 1
+           if self.movement_loop <= -self.max_travel:
+               self.facing = 'right'
 
-        # if self.facing == 'left':
-        #    self.x_change -= ENEMY_SPEED
-        #    self.movement_loop -= 1
-        #    if self.movement_loop <= -self.max_travel:
-        #        self.facing = 'right'
-
-        # if self.facing == 'right':
-        #    self.x_change += ENEMY_SPEED
-        #    self.movement_loop += 1
-        #    if self.movement_loop >= self.max_travel:
-        #        self.facing = 'left'
+        if self.facing == 'right':
+           self.x_change += ENEMY_SPEED
+           self.movement_loop += 1
+           if self.movement_loop >= self.max_travel:
+               self.facing = 'left'
 
 
     def animation(self):

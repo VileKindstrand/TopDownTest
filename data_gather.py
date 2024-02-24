@@ -16,8 +16,7 @@ def arduino_input():
         print (sensor_value)
         i+= 1
 
-x = threading.Thread(target=arduino_input, args=())
-x.start()
+
 
 def test():
     i = 0

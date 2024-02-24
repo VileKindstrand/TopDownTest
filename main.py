@@ -2,6 +2,8 @@ from turtle import left, right, screensize
 import pygame
 from sprites import *
 from config import *
+import threading
+import serial
 #from data_gather import *
 import sys
 class Game(Spritesheet):
@@ -21,6 +23,8 @@ class Game(Spritesheet):
                     Kenny(self, y_pos, x_pos)
                 if coloumn == "E":
                     Enemy(self, y_pos, x_pos)
+                if coloumn == "W":
+                    Waterjug(self, y_pos, x_pos)
 
 
     def __init__(self):
@@ -32,9 +36,11 @@ class Game(Spritesheet):
         self.clock = pygame.time.Clock()
         self.running = True
 
+        # self.ser = serial.Serial('COM3', 9600)
+
         
         self.water_level = FIRST_WATER_LEVEL
-        self.gecko_hp = FIRST_PLAYER_HP
+        self.player_hp = FIRST_PLAYER_HP
 
         self.character_spritesheet = Spritesheet("img/gecko_spritesheet.png")
         self.terrain_spritesheet = Spritesheet("img/terrain.png")
@@ -48,8 +54,9 @@ class Game(Spritesheet):
         self.blocks = pygame.sprite.LayeredUpdates()
         self.villagers = pygame.sprite.LayeredUpdates()
         self.enemies = pygame.sprite.LayeredUpdates()
-        #self.threaten = pygame.sprite.LayeredUpdates()
+        self.attacks = pygame.sprite.LayeredUpdates()
         self.text_box = pygame.sprite.LayeredUpdates()
+        self.waterjugs = pygame.sprite.LayeredUpdates()
 
         self.createTilemap()
 
@@ -60,8 +67,20 @@ class Game(Spritesheet):
                 self.running = False
                 self.playing = False
 
+    def arduino_input(self):
+        # while self.playing:
+            #print ("arduino_input")
+            # self.arduino_data = self.ser.readline().decode("utf-8").strip()   
+            # # Convert the received data to a float
+            # global sensor_value
+            # sensor_value = float(self.arduino_data)
+            # print (sensor_value)
+        pass
+
+
     def update(self):
         self.all_sprites.update()
+
 
 
     def draw(self):
@@ -72,10 +91,16 @@ class Game(Spritesheet):
 
     def main(self):
         #game loop
+        self.data_gather = threading.Thread(target=g.arduino_input, args=())
+        self.data_gather.start()
         while self.playing:                             
             self.events()       #kollar efter input
             self.update()       #uppdaterar skärm
             self.draw()       #pyntar skiten
+            if self.player_hp < 0 or self.water_level < 0:
+                self.playing = False
+
+
 
         self.running = False
 
