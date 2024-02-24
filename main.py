@@ -14,7 +14,7 @@ class Game(Spritesheet):
                 if coloumn == "B":
                     Block(self, y_pos, x_pos)
                 if coloumn == "P":
-                    Player(self, y_pos, x_pos)
+                    self.player = Player(self, y_pos, x_pos)
                 if coloumn == "T":
                     Trunk(self, y_pos, x_pos)
                 if coloumn == "K":
@@ -26,11 +26,15 @@ class Game(Spritesheet):
     def __init__(self):
         pygame.init()
         #self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)      #skapar skärm
-        self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+        self.screen = pygame.display.set_mode((900, 700))
         global screen
         screen = self.screen
         self.clock = pygame.time.Clock()
         self.running = True
+
+        
+        self.water_level = FIRST_WATER_LEVEL
+        self.gecko_hp = FIRST_PLAYER_HP
 
         self.character_spritesheet = Spritesheet("img/gecko_spritesheet.png")
         self.terrain_spritesheet = Spritesheet("img/terrain.png")

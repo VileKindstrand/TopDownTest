@@ -15,7 +15,9 @@ PLAYER_WIDTH = TILESIZE
 SPRITESHEET_WIDTH = 32
 SPRITESHEET_HEIGTH = 32
 
-WATER_LEVEL = 100.0
+FIRST_WATER_LEVEL = 100.0
+FIRST_PLAYER_HP = 100.0
+WATER_EXCHANGE = 1
 
 TEXT_BOX_LAYER = 5
 PLAYER_LAYER = 4
@@ -40,14 +42,14 @@ tilemap = [
 'B...TTTTTTTT.......B',
 'B..................B',
 'B..............B...B',
-'B..............T...BBBBBBBBBBBB',
-'B....B........................B',
-'B....T.......E................B',
-'B..................BBBBBBBBBBBB',
+'B..............T...B',
+'B....B.............B',
+'B....T.......E.....B',
+'B..................B',
 'B........P.........B',
 'B..................B',
 'B....K.............B',
-'B..............E...B',
+'B..................B',
 'B..................B',
 'BBBBBBBBBBBBBBBBBBBB',
 ]
