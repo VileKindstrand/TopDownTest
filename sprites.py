@@ -60,51 +60,6 @@ class Waterjug(pygame.sprite.Sprite):
 
 
 
-class Attack(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
-
-        self.game = game
-        self.groups = self.game.all_sprites, self.game.attacks
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.width = TILESIZE
-        self.height = TILESIZE
-
-        self.animation_loop = 0
-        self.image = self.game.enemy_spritesheet.get_sprite(32, 0, self.width, self.height)
-        self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-    def update(self):
-        self.animation()
-        self.collide()
-
-    def collide(self):
-        hits = pygame.sprite.spritecollide(self, self.game.enemies, True)
-    
-    def animation(self):
-        direction = self.game.player.facing
-
-        right_animation = [(self.game.enemy_spritesheet.get_sprite(0, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 0, 32, 32))]
-        left_animation = [(self.game.enemy_spritesheet.get_sprite(64, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 32, 32, 32))]
-
-        if direction == 'left':
-            self.image = left_animation[math.floor(self.animation_loop)]
-            self.animation_loop += 0.5
-            if self.animation_loop >= 3:
-                self.kill()
-
-        if direction == 'right':
-            self.image = right_animation[math.floor(self.animation_loop)]
-            self.animation_loop += 0.5
-            if self.animation_loop >= 3:
-                self.kill()
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -532,3 +487,51 @@ class Enemy(Player):
             self.animation_loop += 0.05
             if self.animation_loop >= 3:
                 self.animation_loop = 1
+
+
+class Attack(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+
+        self.game = game
+        self._layer = PLAYER_LAYER
+        self.groups = self.game.all_sprites, self.game.attacks
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.width = TILESIZE
+        self.height = TILESIZE
+
+        self.animation_loop = 0
+        self.image = self.game.enemy_spritesheet.get_sprite(32, 0, self.width, self.height)
+        self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+    def update(self):
+        self.animation()
+        self.collide()
+
+    def collide(self):
+        hits = pygame.sprite.spritecollide(self, self.game.enemies, True)
+    
+    def animation(self):
+        direction = self.game.player.facing
+
+        right_animation = [(self.game.enemy_spritesheet.get_sprite(0, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 0, 32, 32))]
+        left_animation = [(self.game.enemy_spritesheet.get_sprite(64, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 32, 32, 32))]
+
+        if direction == 'left':
+            self.image = left_animation[math.floor(self.animation_loop)]
+            self.animation_loop += 0.5
+            if self.animation_loop >= 3:
+                self.kill()
+
+        if direction == 'right':
+            self.image = right_animation[math.floor(self.animation_loop)]
+            self.animation_loop += 0.5
+            if self.animation_loop >= 3:
+                self.kill()

@@ -66,6 +66,13 @@ class Game(Spritesheet):
             if event.type == pygame.QUIT:
                 self.running = False
                 self.playing = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    if self.player.facing == 'left':
+                        Attack(self, self.player.rect.x - TILESIZE, self.player.rect.y)
+                    if self.player.facing == 'right':
+                        Attack(self, self.player.rect.x  + TILESIZE, self.player.rect.y)
+                    
 
     def arduino_input(self):
         # while self.playing:
@@ -99,6 +106,8 @@ class Game(Spritesheet):
             self.draw()       #pyntar skiten
             if self.player_hp < 0 or self.water_level < 0:
                 self.playing = False
+
+
 
 
 
