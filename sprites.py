@@ -1,3 +1,4 @@
+from tkinter import FIRST
 from turtle import delay, distance
 import pygame
 from config import *
@@ -368,7 +369,7 @@ class Ground(pygame.sprite.Sprite):
         self.animation()
 
     def animation(self):
-        if self.game.water_level > 50:
+        if self.game.water_level > FIRST_WATER_LEVEL / 2:
             self.image = self.game.terrain_spritesheet.get_sprite(0, 0, self.width, self.height)
             self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
         else:
@@ -510,11 +511,11 @@ class Enemy(Player):
         
         left_animation = [(self.game.enemy_spritesheet.get_sprite(0, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 0, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 0, 32, 32))]
         right_animation = [(self.game.enemy_spritesheet.get_sprite(64, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 32, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 32, 32, 32))]
-        right_dry_animation = [(self.game.enemy_spritesheet.get_sprite(0, 64, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 64, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 64, 32, 32))]
-        left_dry_animation = [(self.game.enemy_spritesheet.get_sprite(64, 96, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 96, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 96, 32, 32))]
+        left_dry_animation = [(self.game.enemy_spritesheet.get_sprite(0, 64, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 64, 32, 32)), (self.game.enemy_spritesheet.get_sprite(64, 64, 32, 32))]
+        right_dry_animation = [(self.game.enemy_spritesheet.get_sprite(64, 96, 32, 32)), (self.game.enemy_spritesheet.get_sprite(32, 96, 32, 32)), (self.game.enemy_spritesheet.get_sprite(0, 96, 32, 32))]
 
         if self.distance_x > 0:
-            if self.game.water_level > 50:
+            if self.game.water_level > FIRST_WATER_LEVEL / 2:
                 self.image = left_animation[math.floor(self.animation_loop)]
                 self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
             else:
@@ -524,8 +525,8 @@ class Enemy(Player):
             if self.animation_loop >= 3:
                 self.animation_loop = 1
 
-        if self.distance_x < 0:
-            if self.game.water_level > 50:
+        if self.distance_x <= 0:
+            if self.game.water_level > FIRST_WATER_LEVEL / 2:
                 self.image = right_animation[math.floor(self.animation_loop)]
                 self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
             else:

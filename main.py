@@ -76,7 +76,6 @@ class Game(Spritesheet):
                         Attack(self, self.player.rect.x + PLAYER_WIDTH, self.player.rect.y + PLAYER_HEIGHT / 2) 
                 if event.key == pygame.K_TAB:
                     print (random.randint(1, len(self.trunks)))
-                    print ()
                     Enemy(self, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.x / TILESIZE, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.y / TILESIZE) 
                     
 
@@ -91,10 +90,12 @@ class Game(Spritesheet):
         pass
 
     def random_spawn(self):
-        self.spawn_rate = random.randint(1, FPS * int(self.water_level / 20))
-        if self.water_level > 30:
-            if self.spawn_rate == 10:
-                Enemy(self, self.trunk.rect.x / TILESIZE, self.trunk.rect.y / TILESIZE) 
+        if self.water_level > FIRST_WATER_LEVEL/2:
+            self.spawn_rate = random.randint(1, FPS * int(self.water_level / 20))
+        else:
+            self.spawn_rate = random.randint(1, FPS * int(FIRST_WATER_LEVEL / 70))
+        if self.spawn_rate == 10:
+            Enemy(self, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.x / TILESIZE, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.y / TILESIZE) 
 
     def update(self):
         self.all_sprites.update()
