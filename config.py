@@ -18,9 +18,11 @@ PROJECTILE_WIDTH = TILESIZE / 2
 PROJECTILE_HEIGHT = TILESIZE / 2
 
 FIRST_WATER_LEVEL = 200.0
-FIRST_PLAYER_HP = 100.0
-WATER_EXCHANGE = 1
+FIRST_PLAYER_HP = 20.0
+WATER_EXCHANGE = 0.1
+ATTACK_COST = 2
 ENEMY_DAMAGE = 0.2
+SPAWN_RATE = 0.25
 
 TEXT_BOX_LAYER = 5
 PLAYER_LAYER = 4
@@ -31,7 +33,7 @@ GROUND_LAYER = 1
 PROJECTILE_SPEED = TILESIZE / 4
 PLAYER_SPEED = TILESIZE / 10
 ENEMY_SPEED = TILESIZE / 48
-ENEMY_HUNTING_SPEED = ENEMY_SPEED * 1.5
+ENEMY_DRY_SPEED = ENEMY_SPEED * 1.25
 
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
@@ -43,7 +45,7 @@ tilemap = [
 
 'BBBBBBBBBBBBBBBBBBBB',
 'BTTTBBBBBBBBTTTTTTTB',
-'B...TTTTTTTT..E....B',
+'B...TTTTTTTT.......B',
 'B..................B',
 'B..............B...B',
 'B.....P........T...B',
@@ -51,7 +53,7 @@ tilemap = [
 'B....T....W........B',
 'B..................B',
 'B..................B',
-'B................E.B',
+'B..................B',
 'B....K.............B',
 'B..................B',
 'B..................B',

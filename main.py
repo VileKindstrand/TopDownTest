@@ -26,12 +26,13 @@ class Game(Spritesheet):
                     self.enemy = Enemy(self, y_pos, x_pos)
                 if coloumn == "W":
                     self.waterjug = Waterjug(self, y_pos, x_pos)
+        self.textbox = Textbox(self, y_pos, x_pos)
 
 
     def __init__(self):
         pygame.init()
-        #self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)      #skapar skärm
-        self.screen = pygame.display.set_mode((900, 700))
+        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)      #skapar skärm
+        #self.screen = pygame.display.set_mode((900, 700))
         global screen
         screen = self.screen
         self.clock = pygame.time.Clock()
@@ -59,6 +60,7 @@ class Game(Spritesheet):
         self.attacks = pygame.sprite.LayeredUpdates()
         self.trunks = pygame.sprite.LayeredUpdates()
         self.waterjugs = pygame.sprite.LayeredUpdates()
+        self.textboxes = pygame.sprite.LayeredUpdates()
 
         self.createTilemap()
 
@@ -75,8 +77,9 @@ class Game(Spritesheet):
                     if self.player.facing == 'right':
                         Attack(self, self.player.rect.x + PLAYER_WIDTH, self.player.rect.y + PLAYER_HEIGHT / 2) 
                 if event.key == pygame.K_TAB:
-                    print (random.randint(1, len(self.trunks)))
-                    Enemy(self, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.x / TILESIZE, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.y / TILESIZE) 
+                    Textbox(self, 1, 1) 
+                    # print (random.randint(1, len(self.trunks)))
+                    # Enemy(self, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.x / TILESIZE, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.y / TILESIZE) 
                     
 
     def arduino_input(self):
@@ -90,23 +93,29 @@ class Game(Spritesheet):
         pass
 
     def random_spawn(self):
-        if self.water_level > FIRST_WATER_LEVEL/2:
-            self.spawn_rate = random.randint(1, FPS * int(self.water_level / 20))
+        if FPS * int(self.water_level / 20) > 1:
+            self.spawn_rate = random.randint(1, FPS * int(self.water_level / 20))  
         else:
-            self.spawn_rate = random.randint(1, FPS * int(FIRST_WATER_LEVEL / 70))
+            self.spawn_rate = random.randint(1, FPS * int(FIRST_WATER_LEVEL * SPAWN_RATE))
         if self.spawn_rate == 10:
-            Enemy(self, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.x / TILESIZE, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.y / TILESIZE) 
+            self.random_trunk = self.trunk_list[random.randint(0, len(self.trunks) - 1)]
+            Enemy(self, self.random_trunk.rect.x / TILESIZE, self.random_trunk.rect.y / TILESIZE) 
+            # Enemy(self, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.x / TILESIZE, self.trunk_list[random.randint(0, len(self.trunks) - 1)].rect.y / TILESIZE) 
 
     def update(self):
         self.all_sprites.update()
         self.random_spawn()
+        self.textboxes.update()
         #print(self.player.player_true_x)
 
 
 
     def draw(self):
         self.screen.fill(GREEN)
-        self.all_sprites.draw(self.screen)            
+        self.all_sprites.draw(self.screen)      
+        self.textboxes.draw(self.screen)     
+        self.screen.blit(self.textbox.water_level_blit, (TILESIZE/16, 0)) 
+        self.screen.blit(self.textbox.player_level_blit, (TILESIZE/16, TILESIZE))
         self.clock.tick(FPS)
         pygame.display.update()
 
@@ -139,7 +148,6 @@ g.new()
 while g.running:
     g.main()
     g.game_over()
-
 
 pygame.quit()
 sys.exit()

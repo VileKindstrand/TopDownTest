@@ -1,3 +1,4 @@
+import string
 from tkinter import FIRST
 from turtle import delay, distance
 import pygame
@@ -18,17 +19,55 @@ class Spritesheet:
         sprite.set_colorkey(BLACK)
         return sprite
 
+class Textbox(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+
+        self.game = game
+        self._layer = TEXT_BOX_LAYER
+        self.groups = self.game.textboxes
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        pygame.font.init()
+
+        self.my_font = pygame.font.SysFont('Comic Sans MS', 30)
+
+
+        self.x = x * TILESIZE
+        self.y = y  * TILESIZE
+        self.width = PLAYER_WIDTH
+        self.height =  PLAYER_HEIGHT
+
+        self.image = self.game.villager_spritesheet.get_sprite(32, 0, SPRITESHEET_WIDTH, SPRITESHEET_HEIGTH*1.5)
+        self.image.set_colorkey(BLACK)
+        self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y 
+
+        print (self.rect.x, self.rect.y)
+    def update(self):
+        self.text()
+
+    def text(self):
+
+        self.water_index = str(int(self.game.water_level))
+        self.player_index = str(int(self.game.player_hp))
+
+        self.water_level_blit = self.my_font.render("water level: " + self.water_index, False, (255, 255, 255))
+        self.player_level_blit = self.my_font.render("moist meter: " + self.player_index, False, (255, 255, 255))
+
+
+
 class Waterjug(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
 
         self.game = game
-        self.x = x * TILESIZE * 4
-        self.y = y * TILESIZE * 2
-        self.width = SPRITESHEET_WIDTH
-        self.height =  SPRITESHEET_HEIGTH
+        # self.x = x * TILESIZE * 4
+        # self.y = y * TILESIZE * 2
+        # self.width = SPRITESHEET_WIDTH
+        # self.height =  SPRITESHEET_HEIGTH
 
-        self._layer = TEXT_BOX_LAYER
-        self.groups = self.game.all_sprites
         self._layer = BLOCK_LAYER
         self.groups = self.game.all_sprites, self.game.waterjugs
         pygame.sprite.Sprite.__init__(self, self.groups)
@@ -131,49 +170,49 @@ class Player(pygame.sprite.Sprite):
         
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_UP] and keys[pygame.K_LEFT]:
+        if keys[pygame.K_w] and keys[pygame.K_a]:
             for sprite in self.game.all_sprites:
                 sprite.rect.x += PLAYER_SPEED / (2 ** 0.5)
                 sprite.rect.y += PLAYER_SPEED / (2 ** 0.5)
             self.y_change -= PLAYER_SPEED / (2 ** 0.5)
             self.x_change  -= PLAYER_SPEED / (2 ** 0.5)
             self.facing = 'left'
-        elif keys[pygame.K_UP] and keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_w] and keys[pygame.K_d]:
             for sprite in self.game.all_sprites:
                 sprite.rect.x -= PLAYER_SPEED / (2 ** 0.5)
                 sprite.rect.y += PLAYER_SPEED / (2 ** 0.5)
             self.y_change -= PLAYER_SPEED / (2 ** 0.5)
             self.x_change  += PLAYER_SPEED / (2 ** 0.5)
             self.facing = 'right'
-        elif keys[pygame.K_DOWN] and keys[pygame.K_LEFT]:
+        elif keys[pygame.K_s] and keys[pygame.K_a]:
             for sprite in self.game.all_sprites:
                 sprite.rect.x += PLAYER_SPEED / (2 ** 0.5)
                 sprite.rect.y -= PLAYER_SPEED / (2 ** 0.5)
             self.y_change += PLAYER_SPEED / (2 ** 0.5)
             self.x_change  -= PLAYER_SPEED / (2 ** 0.5)
             self.facing = 'left'
-        elif keys[pygame.K_DOWN] and keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_s] and keys[pygame.K_d]:
             for sprite in self.game.all_sprites:
                 sprite.rect.x -= PLAYER_SPEED / (2 ** 0.5)
                 sprite.rect.y -= PLAYER_SPEED / (2 ** 0.5)
             self.y_change += PLAYER_SPEED / (2 ** 0.5)
             self.x_change += PLAYER_SPEED / (2 ** 0.5)
             self.facing = 'right'
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_a]:
             for sprite in self.game.all_sprites:
                 sprite.rect.x += PLAYER_SPEED
             self.x_change  -= PLAYER_SPEED
             self.facing = 'left'
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_d]:
             for sprite in self.game.all_sprites:
                 sprite.rect.x -= PLAYER_SPEED
             self.x_change += PLAYER_SPEED
             self.facing = 'right'
-        elif keys[pygame.K_UP]:
+        elif keys[pygame.K_w]:
             for sprite in self.game.all_sprites:
                 sprite.rect.y += PLAYER_SPEED
             self.y_change -= PLAYER_SPEED
-        elif keys[pygame.K_DOWN]:
+        elif keys[pygame.K_s]:
             for sprite in self.game.all_sprites:
                 sprite.rect.y -= PLAYER_SPEED
             self.y_change += PLAYER_SPEED
@@ -456,8 +495,12 @@ class Enemy(Player):
 
 
         if distance != 0:
-            self.x_change += ENEMY_SPEED * self.distance_x / self.distance
-            self.y_change += ENEMY_SPEED * self.distance_y / self.distance
+            if self.game.water_level > FIRST_WATER_LEVEL / 2:
+                self.x_change += ENEMY_SPEED * self.distance_x / self.distance
+                self.y_change += ENEMY_SPEED * self.distance_y / self.distance
+            else:
+                self.x_change += ENEMY_DRY_SPEED * self.distance_x / self.distance
+                self.y_change += ENEMY_DRY_SPEED * self.distance_y / self.distance
 
             # self.enemy_true_x += ENEMY_SPEED * self.distance_x / self.distance
             # self.rect.x += ENEMY_SPEED * self.distance_x / self.distance
@@ -518,6 +561,7 @@ class Enemy(Player):
             if self.game.water_level > FIRST_WATER_LEVEL / 2:
                 self.image = left_animation[math.floor(self.animation_loop)]
                 self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+                self.animation_loop += 0.05
             else:
                 self.image = left_dry_animation[math.floor(self.animation_loop)]
                 self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
@@ -529,6 +573,7 @@ class Enemy(Player):
             if self.game.water_level > FIRST_WATER_LEVEL / 2:
                 self.image = right_animation[math.floor(self.animation_loop)]
                 self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+                self.animation_loop += 0.05
             else:
                 self.image = right_dry_animation[math.floor(self.animation_loop)]
                 self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
@@ -551,7 +596,7 @@ class Attack(pygame.sprite.Sprite):
         self.height = TILESIZE
 
         self.facing = self.game.player.facing
-        self.game.player_hp -= 5
+        self.game.player_hp -= ATTACK_COST
         print (self.game.player_hp)
 
         self.animation_loop = 0
