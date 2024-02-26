@@ -19,6 +19,40 @@ class Spritesheet:
         sprite.set_colorkey(BLACK)
         return sprite
 
+
+class Startbutton:
+    def __init__(self, game, x, y, width, height, fg, bg, content, fontsize):
+        self.content = content
+        self.game = game
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.content
+
+        self.fg = fg
+        self.bg = bg
+
+        self.font = pygame.font.SysFont('Comic Sans MS', 30)
+
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.bg)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+        
+        self.startbutton_text = self.font.render(self.content, True, self.fg)
+        self.startbutton_text_rect = self.startbutton_text.get_rect(center=(self.width/2, self.height/2))
+        self.image.blit(self.startbutton_text, self.startbutton_text_rect)
+
+    def is_pressed(self, pos, pressed):
+        if self.rect.collidepoint(pos):
+            if pressed[0]:
+                return True
+            return False
+        return False
+
 class Textbox(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
 
@@ -26,10 +60,11 @@ class Textbox(pygame.sprite.Sprite):
         self._layer = TEXT_BOX_LAYER
         self.groups = self.game.textboxes
         pygame.sprite.Sprite.__init__(self, self.groups)
+        self.score_count = 0
 
         pygame.font.init()
 
-        self.my_font = pygame.font.SysFont('Comic Sans MS', 30)
+        #self.font = pygame.font.SysFont('Comic Sans MS', 30)
 
 
         self.x = x * TILESIZE
@@ -45,17 +80,25 @@ class Textbox(pygame.sprite.Sprite):
         self.rect.x = self.x
         self.rect.y = self.y 
 
-        print (self.rect.x, self.rect.y)
+        # print (self.rect.x, self.rect.y)
     def update(self):
         self.text()
+        self.score()
 
     def text(self):
 
         self.water_index = str(int(self.game.water_level))
         self.player_index = str(int(self.game.player_hp))
+        self.score_index = str(int(self.score_count))
 
-        self.water_level_blit = self.my_font.render("water level: " + self.water_index, False, (255, 255, 255))
-        self.player_level_blit = self.my_font.render("moist meter: " + self.player_index, False, (255, 255, 255))
+        self.water_level_blit = self.game.font.render("water level: " + self.water_index, False, (255, 255, 255))
+        self.player_level_blit = self.game.font.render("moist meter: " + self.player_index, False, (255, 255, 255))
+        self.score_level_blit = self.game.font.render("score: " + self.score_index, False, (255, 255, 255))
+
+    def score(self):
+        self.score_count += SCORE_ADD
+
+    
 
 
 
@@ -232,7 +275,7 @@ class Player(pygame.sprite.Sprite):
                 if self.game.player_hp < FIRST_PLAYER_HP:
                     self.game.water_level -= WATER_EXCHANGE
                     self.game.player_hp += WATER_EXCHANGE
-                    print(self.game.water_level, self.game.player_hp)
+                    # print(self.game.water_level, self.game.player_hp)
 
     def interact_villagers(self):
         #screen = pygame.display.set_mode([WIN_WIDTH, WIN_HEIGHT])
@@ -241,7 +284,7 @@ class Player(pygame.sprite.Sprite):
         if hits:
             if keys[pygame.K_LCTRL]:
                 self.game.water_level += 1
-                print(self.game.water_level)
+                # print(self.game.water_level)
 
     def interact_enemies(self):
         #screen = pygame.display.set_mode([WIN_WIDTH, WIN_HEIGHT])
@@ -250,7 +293,7 @@ class Player(pygame.sprite.Sprite):
         hits = pygame.sprite.spritecollide(self, self.game.enemies, False)
         if hits:
                 self.game.player_hp -= ENEMY_DAMAGE
-                print(self.game.player_hp)
+                # print(self.game.player_hp)
 
 
 
@@ -544,7 +587,7 @@ class Enemy(Player):
         hits = pygame.sprite.spritecollide(self, self.game.waterjugs, False)
         if hits:
             self.game.water_level -= 0.05
-            print(self.game.water_level)
+            # print(self.game.water_level)
             self.x_change = 0
             self.y_change = 0
             
@@ -597,7 +640,7 @@ class Attack(pygame.sprite.Sprite):
 
         self.facing = self.game.player.facing
         self.game.player_hp -= ATTACK_COST
-        print (self.game.player_hp)
+        # print (self.game.player_hp)
 
         self.animation_loop = 0
         self.image = self.game.enemy_spritesheet.get_sprite(32, 0, self.width, self.height)
@@ -633,6 +676,8 @@ class Attack(pygame.sprite.Sprite):
         hits_block = pygame.sprite.spritecollide(self, self.game.blocks, False)
         if hits_block or hits_enemy:
             self.kill()
+        if hits_enemy:
+            self.game.textbox.score_count += 100
 
     def animation(self):
         # print ("animation")

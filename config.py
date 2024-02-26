@@ -22,7 +22,8 @@ FIRST_PLAYER_HP = 20.0
 WATER_EXCHANGE = 0.1
 ATTACK_COST = 2
 ENEMY_DAMAGE = 0.2
-SPAWN_RATE = 0.25
+SPAWN_RATE = 15
+SCORE_ADD = 0.1
 
 TEXT_BOX_LAYER = 5
 PLAYER_LAYER = 4
@@ -48,13 +49,13 @@ tilemap = [
 'B...TTTTTTTT.......B',
 'B..................B',
 'B..............B...B',
-'B.....P........T...B',
+'B..............T...B',
 'B....B.............B',
 'B....T....W........B',
 'B..................B',
 'B..................B',
 'B..................B',
-'B....K.............B',
+'B....K...P.........B',
 'B..................B',
 'B..................B',
 'BBBBBBBBBBBBBBBBBBBB',
